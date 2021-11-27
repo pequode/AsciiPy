@@ -1,70 +1,70 @@
 # -*- coding: utf-8 -*-
-"""
-Spyder Editor
-
-This is a temporary script file.
-"""
-try: 
-    #import os
-    #import sys
-    from PIL import Image 
+# built for python 2.7
+#created in 2019 while the programer was learning python
+try:
+    from PIL import Image
     from PIL import GifImagePlugin
     import time
-except: 
+except:
     print("proper lib not installed")
     quit()
     pass
-
+#^^^ check for required libs
+#wrapper method to handle image still printing
 def printImgStill(blackChars,whiteChars,fileN):
     blackChar = blackChars
     whiteChar = whiteChars
-    imgFilePath = fileN 
+    imgFilePath = fileN
     col = Image.open(imgFilePath)
-    printImg(blackChar,whiteChar,col)
-    
+    textOutPut = printImg(blackChar,whiteChar,col)
+    print (textOutPut)
+#main image printing method
 def printImg(blackChars,whiteChars,fileO):
     col = fileO
+    h, w = col.size # image dimentions
+    basewidth = 75 # the desired text width in chars
+    ShinkFact = 0.75# the factor the the image should be scaled down in height.
+    wpercent = (basewidth/float(w))# the precentage of the width that the base width is
+    hsize = int((float(h)*float(wpercent))*ShinkFact)# the scale of the height
+    #scale down
+    col = col.resize((basewidth,hsize), Image.ANTIALIAS)
+    # get new size
     h, w = col.size
-    basewidth = 75
-    ShinkFact = 0.75
-    wpercent = (basewidth/float(col.size[0]))
-    hsize = int((float(col.size[1])*float(wpercent))*ShinkFact)
-    col = col.resize((basewidth,hsize), Image.ANTIALIAS) 
-    h, w = col.size
+    # make greyscale
     gray = col.convert('L')
-    bw = gray.point(lambda x: 0 if x<128 else 255, '1')
-    
+    bw = gray.point(lambda x: 0 if x<128 else 255, '1')# performs a threshold for the grayscale
+    # gets the pixel array for the threshold image
     px = bw.load()
-    #print(bw.size())
     text = ""
-    for i in range(w):
+    for i in range(w): # for every row
         Line =""
-        for j in range(h):
-            
-            if int(str(px[j,i])) == 255:
+        for j in range(h):# for each element of the row
+            if int(px[j,i]) == 255:
                 Line = Line + whiteChars
             else:
                 Line = Line + blackChars
-                
         text = text + Line +"\n"
-    print(text)
-    
+    return text
+
+# a method for printing greyscale images with shading,doesnt work very well
+
 def printImgWColor(fileO):
-    MostToLeast = [" "," ",".",".","%","%","#","#"]
     col = fileO
+    h, w = col.size # image dimentions
+    basewidth = 75 # the desired text width in chars
+    ShinkFact = 0.75# the factor the the image should be scaled down in height.
+    wpercent = (basewidth/float(w))# the precentage of the width that the base width is
+    hsize = int((float(h)*float(wpercent))*ShinkFact)# the scale of the height
+    #scale down
+    col = col.resize((basewidth,hsize), Image.ANTIALIAS)
+    # get new size
     h, w = col.size
-    basewidth = 75
-    ShinkFact = 0.75
-    wpercent = (basewidth/float(col.size[0]))
-    hsize = int((float(col.size[1])*float(wpercent))*ShinkFact)
-    col = col.resize((basewidth,hsize), Image.ANTIALIAS) 
-    h, w = col.size
+    ##^^^ same as printImg
+
     bw = col.convert('LA')
-    #bw = gray.point(lambda x: 0 if x<128 else 255, '1')
-    
     px = bw.load()
-    #print(bw.size())
     text = ""
+    #same idea but just add value brackets
     for i in range(w):
         Line =""
         for j in range(h):
@@ -85,27 +85,16 @@ def printImgWColor(fileO):
                 Line = Line + MostToLeast[6]
             else:
                 Line = Line + MostToLeast[7]
-                
+
         text = text + Line +"\n"
-    print(text)
-    
+    return text
+
 def playGif(blackChars,whiteChars,fileN):
     imageObject = Image.open(fileN)
-    while True:
-      for frame in range(0,imageObject.n_frames):
+    while True:# plays animation
+      for frame in range(0,imageObject.n_frames):# loops through frams in a gif
         imageObject.seek(frame)
-        printImgWColor(imageObject)
-        #printImg(blackChars,whiteChars,imageObject)
+        print printImgWColor(imageObject)
         time.sleep(0.2)
 
-def ifMovie():
-    print
-
-playGif("*"," ","falcon.gif")
-
-
-
-    
-
-
-
+# playGif("*"," ","falcon.gif")
